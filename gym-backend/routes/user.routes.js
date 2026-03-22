@@ -22,9 +22,9 @@ const transporter = nodemailer.createTransport({
 
 transporter.verify((error) => {
   if (error) {
-    console.error("Email transporter error:", error);
+    console.error("❌ Email transporter error:", error);
   } else {
-    console.log("Email server is ready to send messages ✅");
+    console.log("✅ Email server is ready to send messages");
   }
 });
 
@@ -44,7 +44,7 @@ userRouter.post("/register", async (req, res) => {
   try {
     let { firstName, lastName, email, password, role } = req.body;
 
-    email = email.toLowerCase(); // ✅ important
+    email = email.toLowerCase();
 
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
@@ -66,7 +66,8 @@ userRouter.post("/register", async (req, res) => {
 
     await newUser.save();
 
-    const verificationLink = `http://localhost:3000/verifytoken?token=${verificationToken}`;
+    // ✅ FIXED FRONTEND URL
+    const verificationLink = `https://gym-frontend-1-b39t.onrender.com/verifytoken?token=${verificationToken}`;
 
     await transporter.sendMail({
       from: `"GymFlow Team" <${process.env.EMAIL_USER}>`,
@@ -85,7 +86,7 @@ userRouter.post("/register", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("❌ Registration error:", error);
     res.status(500).json({ message: "Registration failed." });
   }
 });
@@ -111,7 +112,7 @@ userRouter.get("/verify", async (req, res) => {
     res.status(200).json({ message: "Email verified successfully." });
 
   } catch (error) {
-    console.error("Verification error:", error);
+    console.error("❌ Verification error:", error);
     res.status(500).json({ message: "Verification failed." });
   }
 });
@@ -124,7 +125,7 @@ userRouter.post("/login", async (req, res) => {
   try {
     let { email, password } = req.body;
 
-    email = email.toLowerCase(); // ✅ important
+    email = email.toLowerCase();
 
     const user = await UserModel.findOne({ email });
 
@@ -151,13 +152,13 @@ userRouter.post("/login", async (req, res) => {
     res.status(200).json({ token, user });
 
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("❌ Login error:", error);
     res.status(500).json({ message: "Login failed." });
   }
 });
 
 /* ===========================
-   GET ALL USERS (Admin Dashboard)
+   GET ALL USERS
 =========================== */
 
 userRouter.get("/", async (req, res) => {
@@ -165,7 +166,7 @@ userRouter.get("/", async (req, res) => {
     const users = await UserModel.find().select("-password");
     res.status(200).json(users);
   } catch (error) {
-    console.error("Fetch users error:", error);
+    console.error("❌ Fetch users error:", error);
     res.status(500).json({ message: "Failed to fetch users" });
   }
 });
@@ -189,7 +190,8 @@ userRouter.post("/forgot-password", async (req, res) => {
     user.verificationToken = resetToken;
     await user.save();
 
-    const resetLink = `http://localhost:3000/forgot-password?token=${resetToken}`;
+    // ✅ FIXED FRONTEND URL
+    const resetLink = `https://gym-frontend-1-b39t.onrender.com/forgot-password?token=${resetToken}`;
 
     await transporter.sendMail({
       from: `"GymFlow Team" <${process.env.EMAIL_USER}>`,
@@ -206,7 +208,7 @@ userRouter.post("/forgot-password", async (req, res) => {
     res.status(200).json({ message: "Reset email sent." });
 
   } catch (error) {
-    console.error("Forgot password error:", error);
+    console.error("❌ Forgot password error:", error);
     res.status(500).json({ message: "Failed to send reset email." });
   }
 });
@@ -235,7 +237,7 @@ userRouter.post("/reset-password", async (req, res) => {
     res.status(200).json({ message: "Password reset successful." });
 
   } catch (error) {
-    console.error("Reset error:", error);
+    console.error("❌ Reset error:", error);
     res.status(500).json({ message: "Reset failed." });
   }
 });
