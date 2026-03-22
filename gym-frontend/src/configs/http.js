@@ -1,32 +1,30 @@
 import axios from "axios";
 
-export const baseURL = "http://localhost:5000";
+// ✅ Backend Render URL
+export const baseURL = "https://gym-project-qegl.onrender.com";
 
-const http = axios.create({ baseURL });
-const access_token = localStorage.getItem("access_token");
+const http = axios.create({
+  baseURL,
+});
 
+// ✅ Request interceptor (token fix)
 http.interceptors.request.use(
-  async (config) => {
+  (config) => {
+    const access_token = localStorage.getItem("access_token"); // 🔥 moved inside
+
     if (access_token) {
       config.headers["Authorization"] = `Bearer ${access_token}`;
     }
+
     return config;
   },
-  (error) => {
-    // Handle request error
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
+// ✅ Response interceptor
 http.interceptors.response.use(
-  (response) => {
-    // Handle successful responses
-    return response;
-  },
-  (error) => {
-    // Handle response error
-    return Promise.reject(error);
-  }
+  (response) => response,
+  (error) => Promise.reject(error)
 );
 
 export default http;
